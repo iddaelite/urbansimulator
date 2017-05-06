@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Rhino;
 using Rhino.Commands;
+using Rhino.DocObjects;
 using Rhino.Geometry;
 using Rhino.Input;
 using Rhino.Input.Custom;
@@ -36,16 +37,42 @@ namespace Urban_Simulator
             RhinoApp.WriteLine("The Urban Simulator has begun.");
 
             urbanModel theUrbanModel = new urbanModel();
-            
-            //getPrecinct()                 //Ask user to select a surface representing the Precinct
-            //generateRoadNetwork()         //Using the precinct, Generate a Road Network
-            //createBlocks()                //Using the road network, create blocks
-            //subdivideBlocks()             //Subdivide the blocks into Plots
-            //instantiateBuildings()        //Place buildings on each plot
+
+            if (!getPrecinct(theUrbanModel))             //Ask user to select a surface representing the Precinct
+                return Result.Failure;
+
+            //generateRoadNetwork()                     //Using the precinct, Generate a Road Network
+            //createBlocks()                            //Using the road network, create blocks
+            //subdivideBlocks()                         //Subdivide the blocks into Plots
+            //instantiateBuildings()                    //Place buildings on each plot
 
             RhinoApp.WriteLine("The Urban Simulator is complete.");
 
             return Result.Success;
         }
+
+
+        public bool getPrecinct(urbanModel model)
+        {
+
+            GetObject obj = new GetObject();
+            obj.GeometryFilter = ObjectType.Surface;
+            obj.SetCommandPrompt("Please select a Surface representing your Precinct");
+
+            GetResult res = obj.Get();
+
+            if (res != GetResult.Object)
+            {
+                RhinoApp.WriteLine("User failed to select a surface.");
+                return false;
+            }
+                
+            if(obj.ObjectCount == 1)
+                model.precinctSrf = obj.Object(0).Surface();
+
+            return true;
+        }
+
+
     }
 }
