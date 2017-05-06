@@ -77,8 +77,16 @@ namespace Urban_Simulator
         public bool generateRoadNetwork(urbanModel model)
         {
 
+            int noIterations = 1;
+
+            List<Curve> obstCrvs = new List<Curve>();
+
             //extract the border from the precinct surface - Temp Geometry
             Curve[] borderCrvs = model.precinctSrf.ToBrep().DuplicateNakedEdgeCurves(true, false);
+
+            foreach (Curve itCrv in borderCrvs)
+                obstCrvs.Add(itCrv);
+
 
             if(borderCrvs.Length > 0)
             {
@@ -87,38 +95,41 @@ namespace Urban_Simulator
                 Random rnd = new Random();
                 Curve theCrv = borderCrvs[rnd.Next(noBorders)];
 
-                //select a random point on one of the edges
-                double t = new Random().NextDouble();
-                Plane perpFrm;
-
-                Point3d pt = theCrv.PointAtNormalizedLength(t);
-                theCrv.PerpendicularFrameAt(t, out perpFrm);
-
-                Point3d pt2 = Point3d.Add(pt, perpFrm.XAxis);
-
-                //Draw a line perpendicular
-                Line ln = new Line(pt, pt2);
-                Curve lnExt = ln.ToNurbsCurve().ExtendByLine(CurveEnd.End, borderCrvs);
-
-                RhinoDoc.ActiveDoc.Objects.AddLine(lnExt.PointAtStart,lnExt.PointAtEnd);
-
-                RhinoDoc.ActiveDoc.Objects.AddPoint(pt);
-
-                RhinoDoc.ActiveDoc.Views.Redraw();
-
-                
-
+                recursivePerpLine(theCrv, ref obstCrvs, 1);
 
             }
-
-
-
-
 
             //Collect the line and repeat the process (select random pt and draw perp line) - recursion
 
             return true;
         }
+
+
+        public void recursivePerpLine(Curve inpCrv, ref List<Curve> inpObst, int cnt)
+        {
+            //select a random point on one of the edges
+            double t = new Random().NextDouble();
+            Plane perpFrm;
+
+            Point3d pt = inpCrv.PointAtNormalizedLength(t);
+            inpCrv.PerpendicularFrameAt(t, out perpFrm);
+
+            Point3d pt2 = Point3d.Add(pt, perpFrm.XAxis);
+
+            //Draw a line perpendicular
+            Line ln = new Line(pt, pt2);
+            Curve lnExt = ln.ToNurbsCurve().ExtendByLine(CurveEnd.End, inpObst);
+
+            inpObst.Add(lnExt);
+
+            RhinoDoc.ActiveDoc.Objects.AddLine(lnExt.PointAtStart, lnExt.PointAtEnd);
+            RhinoDoc.ActiveDoc.Objects.AddPoint(pt);
+
+            RhinoDoc.ActiveDoc.Views.Redraw();
+
+        }
+
+
 
 
 
