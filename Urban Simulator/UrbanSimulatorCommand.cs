@@ -77,7 +77,9 @@ namespace Urban_Simulator
         public bool generateRoadNetwork(urbanModel model)
         {
 
-            int noIterations = 1;
+            int noIterations = 4;
+
+            Random rndRoadT = new Random();
 
             List<Curve> obstCrvs = new List<Curve>();
 
@@ -95,37 +97,45 @@ namespace Urban_Simulator
                 Random rnd = new Random();
                 Curve theCrv = borderCrvs[rnd.Next(noBorders)];
 
-                recursivePerpLine(theCrv, ref obstCrvs, 1);
+                recursivePerpLine(theCrv, ref obstCrvs, rndRoadT, 1, noIterations);
 
             }
-
-            //Collect the line and repeat the process (select random pt and draw perp line) - recursion
 
             return true;
         }
 
 
-        public void recursivePerpLine(Curve inpCrv, ref List<Curve> inpObst, int cnt)
+        public bool recursivePerpLine(Curve inpCrv, ref List<Curve> inpObst, Random inpRnd, int dir, int cnt)
         {
+            if (cnt < 1)
+                return false;
+
             //select a random point on one of the edges
-            double t = new Random().NextDouble();
+            double t = inpRnd.Next(20,80) / 100.0;
             Plane perpFrm;
 
             Point3d pt = inpCrv.PointAtNormalizedLength(t);
             inpCrv.PerpendicularFrameAt(t, out perpFrm);
 
-            Point3d pt2 = Point3d.Add(pt, perpFrm.XAxis);
+            Point3d pt2 = Point3d.Add(pt, perpFrm.XAxis * dir);
 
             //Draw a line perpendicular
             Line ln = new Line(pt, pt2);
             Curve lnExt = ln.ToNurbsCurve().ExtendByLine(CurveEnd.End, inpObst);
 
+            if (lnExt == null)
+                return false;
+
             inpObst.Add(lnExt);
 
             RhinoDoc.ActiveDoc.Objects.AddLine(lnExt.PointAtStart, lnExt.PointAtEnd);
             RhinoDoc.ActiveDoc.Objects.AddPoint(pt);
-
             RhinoDoc.ActiveDoc.Views.Redraw();
+
+            recursivePerpLine(lnExt, ref inpObst, inpRnd,  1, cnt - 1);
+            recursivePerpLine(lnExt, ref inpObst, inpRnd, -1, cnt - 1);
+
+            return true;
 
         }
 
