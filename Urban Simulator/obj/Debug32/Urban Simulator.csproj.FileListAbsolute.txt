@@ -1,0 +1,5 @@
+C:\CODE\urbansimulator_Rhino\Urban Simulator\Urban Simulator\bin\Urban Simulator.dll
+C:\CODE\urbansimulator_Rhino\Urban Simulator\Urban Simulator\bin\Urban Simulator.pdb
+C:\CODE\urbansimulator_Rhino\Urban Simulator\Urban Simulator\obj\Debug32\Urban Simulator.csprojResolveAssemblyReference.cache
+C:\CODE\urbansimulator_Rhino\Urban Simulator\Urban Simulator\obj\Debug32\Urban Simulator.dll
+C:\CODE\urbansimulator_Rhino\Urban Simulator\Urban Simulator\obj\Debug32\Urban Simulator.pdb
