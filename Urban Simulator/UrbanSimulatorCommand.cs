@@ -35,6 +35,8 @@ namespace Urban_Simulator
 
             RhinoApp.WriteLine("The Urban Simulator has begun.");
 
+            urbanModel theUrbanModel = new urbanModel();
+            
             //getPrecinct()                 //Ask user to select a surface representing the Precinct
             //generateRoadNetwork()         //Using the precinct, Generate a Road Network
             //createBlocks()                //Using the road network, create blocks
