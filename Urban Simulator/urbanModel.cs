@@ -17,6 +17,9 @@ namespace Urban_Simulator
 
         public string name = "Urban Model";
         public Surface precinctSrf;
+        public List<Curve> roadNetwork;
+        public List<Brep> blocks;
+        public List<Brep> plots;
 
         public urbanModel()
         {
