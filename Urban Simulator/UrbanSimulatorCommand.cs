@@ -41,7 +41,8 @@ namespace Urban_Simulator
             if (!getPrecinct(theUrbanModel))             //Ask user to select a surface representing the Precinct
                 return Result.Failure;
 
-            //generateRoadNetwork()                     //Using the precinct, Generate a Road Network
+            generateRoadNetwork(theUrbanModel);         //Using the precinct, Generate a Road Network
+
             //createBlocks()                            //Using the road network, create blocks
             //subdivideBlocks()                         //Subdivide the blocks into Plots
             //instantiateBuildings()                    //Place buildings on each plot
@@ -72,6 +73,53 @@ namespace Urban_Simulator
 
             return true;
         }
+
+        public bool generateRoadNetwork(urbanModel model)
+        {
+
+            //extract the border from the precinct surface - Temp Geometry
+            Curve[] borderCrvs = model.precinctSrf.ToBrep().DuplicateNakedEdgeCurves(true, false);
+
+            if(borderCrvs.Length > 0)
+            {
+                int noBorders = borderCrvs.Length;
+
+                Random rnd = new Random();
+                Curve theCrv = borderCrvs[rnd.Next(noBorders)];
+
+                //select a random point on one of the edges
+                double t = new Random().NextDouble();
+                Plane perpFrm;
+
+                Point3d pt = theCrv.PointAtNormalizedLength(t);
+                theCrv.PerpendicularFrameAt(t, out perpFrm);
+
+                Point3d pt2 = Point3d.Add(pt, perpFrm.XAxis);
+
+                //Draw a line perpendicular
+                Line ln = new Line(pt, pt2);
+                Curve lnExt = ln.ToNurbsCurve().ExtendByLine(CurveEnd.End, borderCrvs);
+
+                RhinoDoc.ActiveDoc.Objects.AddLine(lnExt.PointAtStart,lnExt.PointAtEnd);
+
+                RhinoDoc.ActiveDoc.Objects.AddPoint(pt);
+
+                RhinoDoc.ActiveDoc.Views.Redraw();
+
+                
+
+
+            }
+
+
+
+
+
+            //Collect the line and repeat the process (select random pt and draw perp line) - recursion
+
+            return true;
+        }
+
 
 
     }
