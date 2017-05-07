@@ -48,7 +48,7 @@ namespace Urban_Simulator
 
             subdivideBlocks(theUrbanModel, 30, 20);     //Subdivide the blocks into Plots
 
-            //instantiateBuildings()                    //Place buildings on each plo             
+            instantiateBuildings(theUrbanModel);                     //Place buildings on each plo             
 
             RhinoApp.WriteLine("The Urban Simulator is complete.");
 
@@ -82,7 +82,7 @@ namespace Urban_Simulator
         public bool generateRoadNetwork(urbanModel model)
         {
 
-            int noIterations = 5;
+            int noIterations = 6;
 
             Random rndRoadT = new Random();
 
@@ -270,5 +270,29 @@ namespace Urban_Simulator
             return true;
         }
 
+        public bool instantiateBuildings(urbanModel model)
+        {
+
+            Random bldHeight = new Random();
+
+            foreach(Brep Plot in model.plots)
+            {
+
+                Curve border = Curve.JoinCurves(Plot.DuplicateNakedEdgeCurves(true, false))[0];
+
+                Curve buildingOutline = Curve.JoinCurves(border.Offset(Plane.WorldXY, -4, RhinoDoc.ActiveDoc.ModelAbsoluteTolerance, CurveOffsetCornerStyle.None))[0];
+
+                RhinoDoc.ActiveDoc.Objects.AddCurve(buildingOutline);
+
+                Extrusion bld = Extrusion.Create(buildingOutline, bldHeight.Next(12, 160), true);
+                RhinoDoc.ActiveDoc.Objects.AddExtrusion(bld);
+
+
+            }
+
+
+            return true;
+
+        }
     }
 }
