@@ -34,6 +34,8 @@ namespace Urban_Simulator
         protected override Result RunCommand(RhinoDoc doc, RunMode mode)
         {
 
+            RhinoDoc.ActiveDoc.Views.RedrawEnabled = false;
+
             RhinoApp.WriteLine("The Urban Simulator has begun.");
 
             urbanModel theUrbanModel = new urbanModel();
@@ -49,6 +51,8 @@ namespace Urban_Simulator
             subdivideBlocks(theUrbanModel, 30, 20);     //Subdivide the blocks into Plots
 
             RhinoApp.WriteLine("The Urban Simulator is complete.");
+
+            RhinoDoc.ActiveDoc.Views.RedrawEnabled = true;
 
             RhinoDoc.ActiveDoc.Views.Redraw();
 

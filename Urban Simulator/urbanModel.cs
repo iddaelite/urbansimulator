@@ -102,7 +102,6 @@ namespace Urban_Simulator
                 ObjectAttributes oa = new ObjectAttributes();
                 oa.ColorSource = ObjectColorSource.ColorFromObject;
                 oa.ObjectColor = bldCol;
-
                
                 Curve border = Curve.JoinCurves(this.plotSrf.DuplicateNakedEdgeCurves(true, false))[0];
 
